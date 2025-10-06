@@ -1,0 +1,2 @@
+"student_id","password_hash","password_matches"
+"STU001","scrypt:32768:8:1$IHPme2iVieN0pfIa$9249af0b79ed2d87201a24958f508236cc5b6d924d3f79a0e660d273284b15302b0ca57cc1b42f96fa381c5e4b3db0a37c88675a0d26707d0a256131f0a3d0ef",False

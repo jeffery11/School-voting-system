@@ -1,0 +1,5 @@
+"check_item","status","details"
+"Table exists with email column","Yes","voters table has email column"
+"Email column allows NULL values","NO","Email column NO"
+"Unique constraint on email","Yes","Constraints found: 1"
+"Index on email column","Yes","Indexes found: 1"

@@ -1,0 +1,1 @@
+LTER  username WITH PASSWORD 'new_password';

@@ -1,0 +1,6 @@
+"column_name","data_type"
+"id","integer"
+"student_id","character varying"
+"candidate_id","integer"
+"position_id","integer"
+"voted_at","timestamp without time zone"

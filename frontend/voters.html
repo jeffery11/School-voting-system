@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voters - School Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .voters-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .stat-card.voted {
+            border-left: 4px solid var(--success);
+        }
+
+        .stat-card.not-voted {
+            border-left: 4px solid var(--danger);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .voter-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .voter-profile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .voter-profile:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .voter-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            border: 3px solid white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .voter-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .voter-avatar.grade-12 {
+            background: linear-gradient(135deg, #004080, #1a6fc4);
+        }
+
+        .voter-avatar.grade-11 {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .voter-avatar.grade-10 {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+        }
+
+        .voter-avatar.grade-9 {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+
+        .voter-info {
+            flex: 1;
+        }
+
+        .voter-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voter-details {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .voter-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .voter-detail i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .voter-status {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .voter-status:hover {
+            transform: scale(1.05);
+        }
+
+        .status-voted {
+            background: linear-gradient(135deg, var(--success), #20c997);
+            color: white;
+        }
+
+        .status-not-voted {
+            background: linear-gradient(135deg, var(--danger), #e83e8c);
+            color: white;
+        }
+
+        .voter-actions {
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .voter-profile:hover .voter-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .action-btn.view {
+            background: linear-gradient(135deg, var(--info), #17a2b8);
+            color: white;
+        }
+
+        .action-btn.remind {
+            background: linear-gradient(135deg, var(--warning), #ffc107);
+            color: var(--dark);
+        }
+
+        .action-btn.export {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .filter-section {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            color: var(--primary);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            color: var(--primary);
+            border-color: var(--accent);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, var(--success), #20c997);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+        }
+
+        .voter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .refresh-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+            border-color: var(--accent);
+        }
+
+        .voter-count {
+            color: var(--accent);
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .voter-profile {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .voter-details {
+                justify-content: center;
+            }
+
+            .voter-actions {
+                opacity: 1;
+                justify-content: center;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* New animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .highlight-new {
+            animation: highlight 3s ease;
+        }
+
+        @keyframes highlight {
+            0% { background: rgba(255,215,0,0.3); }
+            100% { background: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="school-logo">CTK</div>
+                <h1>Registered Voters</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="candidates.html" class="nav-link"><i class="fas fa-users"></i> Candidates</a></li>
+                <li><a href="voters.html" class="nav-link active"><i class="fas fa-user-friends"></i> Voters</a></li>
+                <li><a href="results.html" class="nav-link"><i class="fas fa-chart-bar"></i> Results</a></li>
+                <li><a href="login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li><a href="admin.html" class="nav-link"><i class="fas fa-shield-alt"></i> Admin</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Student Voters</h1>
+        <p class="page-subtitle">View all registered voters and their voting status</p>
+
+        <!-- Statistics -->
+        <div class="voters-stats">
+            <div class="stat-card" onclick="filterVoters('all')">
+                <div class="stat-number" id="totalVoters">0</div>
+                <div class="stat-label">Total Voters</div>
+            </div>
+            <div class="stat-card voted" onclick="filterVoters('voted')">
+                <div class="stat-number" id="votedCount">0</div>
+                <div class="stat-label">Have Voted</div>
+            </div>
+            <div class="stat-card not-voted" onclick="filterVoters('not-voted')">
+                <div class="stat-number" id="notVotedCount">0</div>
+                <div class="stat-label">Not Voted</div>
+            </div>
+            <div class="stat-card" onclick="showParticipationDetails()">
+                <div class="stat-number" id="participationRate">0%</div>
+                <div class="stat-label">Participation Rate</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="participationProgress" style="width: 0%"></div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="view-controls">
+                <button class="refresh-btn" onclick="loadVoters()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="export-btn" onclick="exportVoters()">
+                    <i class="fas fa-download"></i> Export List
+                </button>
+            </div>
+            <div class="view-controls">
+                <span style="color: white;">View: </span>
+                <button class="view-btn active" onclick="setViewMode('grid')">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button class="view-btn" onclick="setViewMode('list')">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search voters by name or student ID..." onkeyup="searchVoters()">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterVoters('all')">
+                    <i class="fas fa-layer-group"></i> All Voters
+                </button>
+                <button class="filter-btn" onclick="filterVoters('voted')">
+                    <i class="fas fa-check-circle"></i> Voted <span class="voter-count" id="votedCountBadge">0</span>
+                </button>
+                <button class="filter-btn" onclick="filterVoters('not-voted')">
+                    <i class="fas fa-clock"></i> Not Voted <span class="voter-count" id="notVotedCountBadge">0</span>
+                </button>
+                <button class="filter-btn" onclick="filterVoters('grade-12')">
+                    <i class="fas fa-graduation-cap"></i> 12th Grade
+                </button>
+                <button class="filter-btn" onclick="filterVoters('grade-11')">
+                    <i class="fas fa-user-graduate"></i> 11th Grade
+                </button>
+                <button class="filter-btn" onclick="filterVoters('grade-10')">
+                    <i class="fas fa-user"></i> 10th Grade
+                </button>
+            </div>
+        </div>
+
+        <!-- Voters List -->
+        <div id="votersList">
+            <div class="cards-grid">
+                <div class="voter-profile fade-in-up">
+                    <div class="voter-avatar grade-12">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="voter-info">
+                        <div class="voter-name">Loading Voters...</div>
+                        <div class="voter-details">
+                            <div class="voter-detail">
+                                <i class="fas fa-id-card"></i>
+                                <span>Student ID: Loading...</span>
+                            </div>
+                            <div class="voter-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Grade: Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="voter-status status-not-voted">
+                        Loading...
+                    </div>
+                    <div class="voter-actions">
+                        <button class="action-btn view" onclick="viewVoterDetails(0)">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="action-btn remind" onclick="sendReminder(0)">
+                            <i class="fas fa-bell"></i> Remind
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Last Updated -->
+        <div class="last-updated" id="lastUpdated">
+            Last updated: <span id="updateTime">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Voter Details Modal -->
+    <div class="voter-modal" id="voterModal">
+        <div class="modal-content">
+            <h3 id="modalVoterName">Voter Details</h3>
+            <div id="modalVoterDetails">
+                Loading voter details...
+            </div>
+            <button onclick="closeModal()" style="margin-top: 1rem; width: 100%;" class="btn">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 1rem;">
+                <div class="school-logo">CTK</div>
+                <h2>Christ the King Anglican School</h2>
+            </div>
+            <p>Empowering students through democratic participation</p>
+            
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Portal</a>
+            </div>
+            
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            
+            <p>&copy; 2024 Christ the King Anglican School. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Update API_BASE to your Railway deployment URL
+        const API_BASE = 'https://your-app-name.up.railway.app/api';
+        let allVoters = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentView = 'grid';
+        let lastUpdateTime = null;
+
+        // Load voters
+        async function loadVoters() {
+            try {
+                showLoadingState();
+                const response = await fetch(`${API_BASE}/voters`);
+                allVoters = await response.json();
+                lastUpdateTime = new Date();
+                updateStatistics(allVoters);
+                displayVoters(allVoters);
+                updateLastUpdated();
+            } catch (error) {
+                console.error('Error loading voters:', error);
+                showErrorState();
+            }
+        }
+
+        function showLoadingState() {
+            document.getElementById('votersList').innerHTML = `
+                <div class="cards-grid">
+                    ${Array(6).fill().map((_, index) => `
+                        <div class="voter-profile fade-in-up" style="animation-delay: ${index * 0.1}s">
+                            <div class="voter-avatar grade-12" style="background: #e9ecef;">
+                                <i class="fas fa-user" style="color: #ccc;"></i>
+                            </div>
+                            <div class="voter-info">
+                                <div class="voter-name" style="background: #e9ecef; height: 20px; border-radius: 4px;"></div>
+                                <div class="voter-details">
+                                    <div class="voter-detail" style="background: #e9ecef; height: 16px; width: 120px; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div class="voter-status" style="background: #e9ecef; height: 35px; width: 100px; border-radius: 25px;"></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function showErrorState() {
+            document.getElementById('votersList').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 style="color: white; margin-bottom: 1rem;">Unable to Load Voters</h3>
+                    <p style="color: rgba(255,255,255,0.8);">Please check your connection and try again.</p>
+                    <button class="btn" onclick="loadVoters()" style="margin-top: 1rem;">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        // Update statistics
+        function updateStatistics(voters) {
+            const totalVoters = voters.length;
+            const votedCount = voters.filter(voter => voter.has_voted).length;
+            const notVotedCount = totalVoters - votedCount;
+            const participationRate = totalVoters > 0 ? Math.round((votedCount / totalVoters) * 100) : 0;
+
+            document.getElementById('totalVoters').textContent = totalVoters;
+            document.getElementById('votedCount').textContent = votedCount;
+            document.getElementById('notVotedCount').textContent = notVotedCount;
+            document.getElementById('participationRate').textContent = participationRate + '%';
+            document.getElementById('votedCountBadge').textContent = votedCount;
+            document.getElementById('notVotedCountBadge').textContent = notVotedCount;
+
+            // Update progress bar
+            document.getElementById('participationProgress').style.width = participationRate + '%';
+        }
+
+        // Display voters
+        function displayVoters(voters) {
+            const container = document.getElementById('votersList');
+            
+            if (voters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <h3 style="color: white; margin-bottom: 1rem;">No Voters Found</h3>
+                        <p style="color: rgba(255,255,255,0.8);">No voters match your current filter or search.</p>
+                        <button class="btn" onclick="filterVoters('all')" style="margin-top: 1rem;">
+                            Show All Voters
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const viewClass = currentView === 'list' ? 'voter-list' : 'cards-grid';
+            
+            container.innerHTML = `
+                <div class="${viewClass}">
+                    ${voters.map((voter, index) => {
+                        const initials = voter.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                        const statusClass = voter.has_voted ? 'status-voted' : 'status-not-voted';
+                        const statusText = voter.has_voted ? '✓ Voted' : '✗ Not Voted';
+                        const gradeClass = `grade-${voter.grade_level.replace('th Grade', '').replace('rd Grade', '').replace('nd Grade', '').replace('st Grade', '')}`;
+                        const voteTime = voter.has_voted ? new Date(voter.updated_at).toLocaleString() : 'Not voted yet';
+                        
+                        return `
+                            <div class="voter-profile fade-in-up highlight-new" style="animation-delay: ${index * 0.05}s">
+                                <div class="voter-avatar ${gradeClass}">
+                                    ${initials}
+                                </div>
+                                <div class="voter-info">
+                                    <div class="voter-name">
+                                        ${voter.name}
+                                        ${voter.has_voted ? '<i class="fas fa-check-circle" style="color: var(--success);"></i>' : ''}
+                                    </div>
+                                    <div class="voter-details">
+                                        <div class="voter-detail">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>${voter.student_id}</span>
+                                        </div>
+                                        <div class="voter-detail">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <span>${voter.grade_level}</span>
+                                        </div>
+                                        <div class="voter-detail">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>${voteTime}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="voter-status ${statusClass}" onclick="toggleVoteStatus(${voter.id})">
+                                    ${statusText}
+                                </div>
+                                <div class="voter-actions">
+                                    <button class="action-btn view" onclick="viewVoterDetails(${voter.id})">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    ${!voter.has_voted ? `
+                                    <button class="action-btn remind" onclick="sendReminder(${voter.id})">
+                                        <i class="fas fa-bell"></i> Remind
+                                    </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Filter voters
+        function filterVoters(filter) {
+            currentFilter = filter;
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event) {
+                event.target.classList.add('active');
+            }
+
+            let filteredVoters = allVoters;
+
+            // Apply search filter first
+            if (currentSearch) {
+                filteredVoters = filteredVoters.filter(voter => 
+                    voter.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    voter.student_id.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+            }
+
+            // Apply category filter
+            switch (filter) {
+                case 'voted':
+                    filteredVoters = filteredVoters.filter(voter => voter.has_voted);
+                    break;
+                case 'not-voted':
+                    filteredVoters = filteredVoters.filter(voter => !voter.has_voted);
+                    break;
+                case 'grade-12':
+                    filteredVoters = filteredVoters.filter(voter => voter.grade_level === '12th Grade');
+                    break;
+                case 'grade-11':
+                    filteredVoters = filteredVoters.filter(voter => voter.grade_level === '11th Grade');
+                    break;
+                case 'grade-10':
+                    filteredVoters = filteredVoters.filter(voter => voter.grade_level === '10th Grade');
+                    break;
+                case 'grade-9':
+                    filteredVoters = filteredVoters.filter(voter => voter.grade_level === '9th Grade');
+                    break;
+            }
+
+            displayVoters(filteredVoters);
+        }
+
+        // Search voters
+        function searchVoters() {
+            currentSearch = document.getElementById('searchInput').value;
+            filterVoters(currentFilter);
+        }
+
+        // Set view mode
+        function setViewMode(mode) {
+            currentView = mode;
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            filterVoters(currentFilter);
+        }
+
+        // View voter details
+        function viewVoterDetails(voterId) {
+            const voter = allVoters.find(v => v.id === voterId);
+            if (voter) {
+                document.getElementById('modalVoterName').textContent = voter.name;
+                document.getElementById('modalVoterDetails').innerHTML = `
+                    <div style="display: grid; gap: 1rem;">
+                        <div><strong>Student ID:</strong> ${voter.student_id}</div>
+                        <div><strong>Grade:</strong> ${voter.grade_level}</div>
+                        <div><strong>Voting Status:</strong> ${voter.has_voted ? 'Voted ✓' : 'Not Voted ✗'}</div>
+                        <div><strong>Registered:</strong> ${new Date(voter.created_at).toLocaleDateString()}</div>
+                        ${voter.has_voted ? `<div><strong>Voted On:</strong> ${new Date(voter.updated_at).toLocaleString()}</div>` : ''}
+                    </div>
+                `;
+                document.getElementById('voterModal').style.display = 'block';
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('voterModal').style.display = 'none';
+        }
+
+        // Send reminder
+        function sendReminder(voterId) {
+            const voter = allVoters.find(v => v.id === voterId);
+            if (voter && confirm(`Send voting reminder to ${voter.name}?`)) {
+                alert(`Reminder sent to ${voter.name} (${voter.student_id})`);
+                // In a real app, this would send an email or notification
+            }
+        }
+
+        // Export voters
+        function exportVoters() {
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Name,Student ID,Grade Level,Voting Status,Registered Date\n"
+                + allVoters.map(voter => 
+                    `"${voter.name}","${voter.student_id}","${voter.grade_level}","${voter.has_voted ? 'Voted' : 'Not Voted'}","${new Date(voter.created_at).toLocaleDateString()}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "voters_list.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show participation details
+        function showParticipationDetails() {
+            const total = allVoters.length;
+            const voted = allVoters.filter(v => v.has_voted).length;
+            const rate = total > 0 ? Math.round((voted / total) * 100) : 0;
+            
+            alert(`Participation Details:\n\nTotal Voters: ${total}\nVoted: ${voted}\nNot Voted: ${total - voted}\nParticipation Rate: ${rate}%`);
+        }
+
+        // Update last updated time
+        function updateLastUpdated() {
+            if (lastUpdateTime) {
+                document.getElementById('updateTime').textContent = lastUpdateTime.toLocaleTimeString();
+            }
+        }
+
+        // Add fade-in animation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVoters();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadVoters, 30000);
+            
+            const elements = document.querySelectorAll('.fade-in-up');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('voterModal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+"id","email","name","has_voted","registration_date"
+1,"voter1@email.com","John Doe",False,"2025-09-13 21:15:17.659594"
+2,"voter2@email.com","Jane Smith",False,"2025-09-13 21:15:17.659594"
+3,"voter3@email.com","Bob Johnson",False,"2025-09-13 21:15:17.659594"
+14,"alice@school.edu","Alice Johnson",False,"2025-09-21 16:50:53.430355"
+15,"bob@school.edu","Bob Smith",False,"2025-09-21 16:50:53.430355"

@@ -1,0 +1,6 @@
+"column_name","data_type","is_nullable"
+"id","integer","NO"
+"email","character varying","NO"
+"name","character varying","NO"
+"has_voted","boolean","YES"
+"registration_date","timestamp without time zone","YES"

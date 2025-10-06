@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - School Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><circle cx="20" cy="20" r="8" fill="%23004080"/><circle cx="80" cy="80" r="6" fill="%23ffd700"/><circle cx="40" cy="70" r="10" fill="%231a6fc4"/><circle cx="70" cy="30" r="7" fill="%2328a745"/></svg>') repeat;
+            animation: float 30s infinite linear;
+        }
+
+        .login-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            width: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><polygon points="50,0 100,50 50,100 0,50" fill="white"/></svg>') repeat;
+            animation: rotate 20s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            color: var(--accent);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-features {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-features li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .hero-features i {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .login-form-section {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            padding: 1.2rem;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.1);
+            transform: scale(1.02);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .demo-credentials {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .demo-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .demo-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .demo-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: var(--secondary);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1.3rem 2rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 64, 128, 0.3);
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 64, 128, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .login-hero {
+                display: none;
+            }
+            
+            .login-page {
+                padding: 1rem;
+            }
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: floatElement 15s infinite linear;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 40%;
+            left: 85%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatElement {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-30px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(30px) rotate(240deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <!-- Floating Background Elements -->
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+
+        <div class="login-container">
+            <!-- Hero Section -->
+            <div class="login-hero">
+                <div class="hero-icon">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <h1 class="hero-title">Make Your Voice Heard</h1>
+                <p class="hero-subtitle">Participate in our school's democratic process</p>
+                
+                <ul class="hero-features">
+                    <li>
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure & Private Voting</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-bolt"></i>
+                        <span>Instant Results</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Mobile Friendly</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>24/7 Access</span>
+                    </li>
+                </ul>
+
+                <div style="margin-top: 2rem; opacity: 0.8;">
+                    <p>"Your vote is your voice. Make it count!"</p>
+                </div>
+            </div>
+
+            <!-- Login Form Section -->
+            <div class="login-form-section">
+                <div class="form-header">
+                    <div class="form-icon">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <h2 class="form-title">Student Login</h2>
+                    <p class="form-subtitle">Enter your credentials to access the voting system</p>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="demo-credentials">
+                    <div class="demo-title">
+                        <i class="fas fa-info-circle"></i>
+                        Demo Login Credentials
+                    </div>
+                    <div class="demo-item">
+                        <span class="demo-label">Student ID:</span>
+                        <span class="demo-value">STU001, STU002, STU003</span>
+                    </div>
+                    <div class="demo-item">
+                        <span class="demo-label">Password:</span>
+                        <span class="demo-value">password123</span>
+                    </div>
+                </div>
+
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="studentId">
+                            <i class="fas fa-id-card"></i>
+                            Student ID or Email:
+                        </label>
+                        <input type="text" id="studentId" name="studentId" placeholder="Enter STU001 or your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Password:
+                        </label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Vote
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    <p>Need help? <a href="#">Contact School Administrator</a></p>
+                    <p><a href="#">Forgot Password?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update API_BASE to your Railway deployment URL
+        const API_BASE = 'https://your-app-name.up.railway.app/api';
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Simple validation
+            if (!studentId || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+                loginBtn.disabled = true;
+                
+                // API call to login
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        password: password
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    // Store user data
+                    localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    localStorage.setItem('authToken', result.token);
+                    
+                    // Check if user has already voted
+                    if (result.user.has_voted) {
+                        alert(`Welcome back, ${result.user.name}! You have already voted. Redirecting to results...`);
+                        window.location.href = 'results.html';
+                    } else {
+                        // Add success animation
+                        loginBtn.innerHTML = '<i class="fas fa-check"></i> Login Successful!';
+                        loginBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                        
+                        setTimeout(() => {
+                            alert(`Login successful! Welcome, ${result.user.name}`);
+                            window.location.href = 'vote.html';
+                        }, 1000);
+                    }
+                    
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Login failed. Please check your credentials.');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                // Show error animation
+                loginBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Login Failed';
+                loginBtn.style.background = 'linear-gradient(135deg, #dc3545, #e83e8c)';
+                
+                setTimeout(() => {
+                    alert('Login failed: ' + error.message);
+                    
+                    // Reset button
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Vote';
+                    loginBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                    loginBtn.disabled = false;
+                }, 1000);
+            }
+        });
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                if (user.has_voted) {
+                    window.location.href = 'results.html';
+                } else {
+                    window.location.href = 'vote.html';
+                }
+            }
+
+            // Add input animations
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.classList.remove('focused');
+                    }
+                });
+            });
+        });
+
+        // Add some interactive effects
+        document.addEventListener('mousemove', function(e) {
+            const hero = document.querySelector('.login-hero');
+            if (hero) {
+                const x = (e.clientX / window.innerWidth) * 20;
+                const y = (e.clientY / window.innerHeight) * 20;
+                hero.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg)`;
+            }
+        });
+    </script>
+</body>
+</html>

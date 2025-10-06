@@ -1,0 +1,169 @@
+-- Create students table
+CREATE TABLE students (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    student_id VARCHAR(20) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    has_voted BOOLEAN DEFAULT FALSE,
+    grade_level VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create positions table
+CREATE TABLE positions (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    grade_level_requirement VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Continue with other tables...
+
+CREATE TABLE positions (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    grade_level_requirement VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+   
+…………………………………………………………………………………………………………………………………………………
+
+INSERT INTO positions (title, description, grade_level_requirement) VALUES 
+('President', 'Head of the student council', '11th-12th'),
+('Vice President', 'Assists the president', '10th-12th'),
+('Secretary', 'Manages documentation and records', '9th-12th'),
+('Treasurer', 'Manages finances', '10th-12th');
+
+……………………………………………………………………………………………………………………………………………
+
+-- Use unique student IDs that don't already exist
+INSERT INTO students (name, student_id, password_hash, grade_level, has_voted) VALUES
+('John Doe', 'STU007', 'hashed_password_7', '12th Grade', TRUE),
+('Jane Smith', 'STU008', 'hashed_password_8', '11th Grade', TRUE),
+('Mike Johnson', 'STU009', 'hashed_password_9', '10th Grade', FALSE);
+………………………………………………………………………………………………………………………………………………………………………..
+
+INSERT INTO votes (student_id, candidate_id, position_id) VALUES
+('STU001', 1, 1),
+('STU002', 2, 1),
+('STU003', 1, 1),
+('STU004', 2, 1),
+('STU006', 1, 1),
+('STU001', 3, 2),
+('STU002', 4, 2),
+('STU003', 3, 2),
+('STU004', 4, 2),
+('STU006', 3, 2),
+('STU001', 5, 3),
+('STU002', 5, 3),
+('STU004', 5, 3),
+('STU006', 5, 3),
+('STU001', 6, 4),
+('STU002', 6, 4),
+('STU004', 6, 4);
+………………………………………………………………………………………………………………………………………………
+INSERT INTO election_settings (election_name, start_date, end_date, is_active) VALUES
+('Student Council Election 2023', '2023-10-01 08:00:00', '2023-10-15 16:00:00', true)
+ON CONFLICT (id) DO UPDATE SET
+election_name = EXCLUDED.election_name,
+start_date = EXCLUDED.start_date,
+end_date = EXCLUDED.end_date,
+is_active = EXCLUDED.is_active;
+
+……………………………………………………………………………………………………………………
+export
+
+-- Create a comprehensive export
+COPY (
+    SELECT 'STUDENTS' as table_name, student_id, name, grade_level, has_voted, NULL as other_info
+    FROM students
+    UNION ALL
+    SELECT 'VOTES' as table_name, student_id, NULL as name, NULL as grade_level, NULL as has_voted, 
+           'Candidate: ' || candidate_id::text as other_info
+    FROM votes
+) TO 'C:/exports/combined_data.csv' WITH CSV HEADER;
+………………………………………………………………………………………………………………………………………………………………….
+
+SELECT 
+    c.id as candidate_id,
+    c.name as candidate_name,
+    c.position_id,
+    p.title as position_name,
+    COUNT(v.id) as vote_count,
+    -- Fun ranking titles!
+    CASE 
+        WHEN COUNT(v.id) = 0 THEN '🎭 Underdog (Zero Votes)'
+        WHEN COUNT(v.id) < 10 THEN '🐣 Rookie Campaigner'
+        WHEN COUNT(v.id) < 50 THEN '🚀 Rising Star'
+        WHEN COUNT(v.id) < 100 THEN '🌟 Popular Choice'
+        WHEN COUNT(v.id) < 200 THEN '🔥 Crowd Favorite'
+        ELSE '🏆 ELECTION SUPERSTAR!'
+    END as popularity_level,
+    
+    -- Fun emoji indicators
+    CONCAT(
+        CASE 
+            WHEN COUNT(v.id) = 0 THEN 
+            WHEN COUNT(v.id) < 10 THEN 
+            WHEN COUNT(v.id) < 50 THEN 
+            WHEN COUNT(v.id) < 100 THEN 
+            WHEN COUNT(v.id) < 200 THEN 
+            ELSE '🏆'
+        END,
+        ' ',
+        REPEAT('⭐', GREATEST(1, FLOOR(COUNT(v.id)/20))),
+        ' ',
+        CASE 
+            WHEN COUNT(v.id) = (MAX(COUNT(v.id)) OVER (PARTITION BY p.id)) 
+                 THEN '👑 WINNER!'
+            ELSE ''
+        END
+    ) as fun_indicators,
+
+    -- Percentage of total votes for this position
+    ROUND(COUNT(v.id) * 100.0 / NULLIF(SUM(COUNT(v.id)) OVER (PARTITION BY p.id), 0), 1) as vote_percentage,
+
+    -- How close to winning?
+    CASE 
+        WHEN COUNT(v.id) = (MAX(COUNT(v.id)) OVER (PARTITION BY p.id)) THEN '🥇 LEADING!'
+        WHEN COUNT(v.id) > 0 THEN CONCAT('📊 ', 
+            COUNT(v.id) - (MAX(COUNT(v.id)) OVER (PARTITION BY p.id)), 
+            ' votes behind')
+        ELSE '💤 Not in the race yet'
+    END as race_status
+
+FROM candidates c
+LEFT JOIN votes v ON c.id = v.candidate_id
+LEFT JOIN positions p ON c.position_id = p.id
+GROUP BY c.id, c.name, c.position_id, p.title, p.id
+ORDER BY p.title, vote_count DESC;
+………………………………………………………………………………………………………………………………………………………………………………
+
+-- Add some random fun facts!
+SELECT 
+    ... [previous columns] ...,
+    CASE 
+        WHEN RAND() < 0.3 THEN '🎯 Most votes on Tuesday!'
+        WHEN RAND() < 0.6 THEN '📈 Gaining momentum!'
+        WHEN COUNT(v.id) = 0 THEN '🤔 Campaign starts tomorrow?'
+        ELSE '💪 Still in the race!'
+    END as fun_fact,
+    
+    -- Campaign slogan generator!
+    CONCAT(
+        CASE FLOOR(RAND() * 5)
+            WHEN 0 THEN '✅ Yes we can!'
+            WHEN 1 THEN '🚀 Forward together!'
+            WHEN 2 THEN '🌈 Change is coming!'
+            WHEN 3 THEN '💡 Bright ideas!'
+            ELSE '🌟 Hope and progress!'
+        END
+    ) as campaign_slogan
+
+FROM …
+.............................................
+

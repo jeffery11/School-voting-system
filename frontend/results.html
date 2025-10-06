@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results - School Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .results-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .position-results {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .position-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .candidate-result {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .candidate-result.winner {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 4px solid var(--success);
+        }
+        
+        .candidate-name {
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .vote-count {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .winner-badge {
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .vote-bar-container {
+            flex: 1;
+            margin: 0 1rem;
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+        
+        .vote-bar {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <i class="fas fa-chart-bar logo"></i>
+                <h1>Election Results</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="candidates.html" class="nav-link"><i class="fas fa-users"></i> Candidates</a></li>
+                <li><a href="voters.html" class="nav-link"><i class="fas fa-user-friends"></i> Voters</a></li>
+                <li><a href="results.html" class="nav-link active"><i class="fas fa-chart-bar"></i> Results</a></li>
+                <li><a href="login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li><a href="admin.html" class="nav-link"><i class="fas fa-shield-alt"></i> Admin</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Election Results 2024</h1>
+        
+        <div class="results-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalVotes">0</div>
+                <div class="stat-label">Total Votes Cast</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalVoters">0</div>
+                <div class="stat-label">Registered Voters</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="participationRate">0%</div>
+                <div class="stat-label">Participation Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="positionsCount">0</div>
+                <div class="stat-label">Positions</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 1rem;">
+            <button class="refresh-btn" onclick="loadResults()">
+                <i class="fas fa-sync-alt"></i> Refresh Results
+            </button>
+            <div class="last-updated" id="lastUpdated">
+                Last updated: Loading...
+            </div>
+        </div>
+        
+        <div class="results-container">
+            <div id="resultsList" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading election results...</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; color: #666;">
+            <p><i class="fas fa-info-circle"></i> Results are updated in real-time. Refresh to see latest votes.</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Christ the King Anglican School. All rights reserved.</p>
+            <p>Empowering students through democratic participation</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+
+        // Load election results
+        async function loadResults() {
+            try {
+                document.getElementById('resultsList').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading election results...</p>
+                    </div>
+                `;
+
+                const [resultsRes, votersRes] = await Promise.all([
+                    fetch(`${API_BASE}/results`),
+                    fetch(`${API_BASE}/voters`)
+                ]);
+
+                const results = await resultsRes.json();
+                const voters = await votersRes.json();
+
+                displayResults(results, voters);
+                
+                // Update last updated time
+                const now = new Date();
+                document.getElementById('lastUpdated').textContent = 
+                    `Last updated: ${now.toLocaleTimeString()}`;
+
+            } catch (error) {
+                console.error('Error loading results:', error);
+                document.getElementById('resultsList').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Error Loading Results</div>
+                        <div class="card-subtitle">Please try again later</div>
+                        <p style="color: #666; margin-top: 1rem;">Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // REPLACE displayResults FUNCTION WITH THIS VERSION
+        function displayResults(results, voters) {
+            // Update stats
+            const totalVotes = results.reduce((sum, result) => sum + result.vote_count, 0);
+            const totalVoters = voters.length;
+            const participationRate = totalVoters > 0 ? ((totalVotes / totalVoters) * 100).toFixed(1) : 0;
+            
+            // Count unique positions
+            const positions = [...new Set(results.map(result => result.position))];
+            const positionsCount = positions.length;
+
+            document.getElementById('totalVotes').textContent = totalVotes;
+            document.getElementById('totalVoters').textContent = totalVoters;
+            document.getElementById('participationRate').textContent = `${participationRate}%`;
+            document.getElementById('positionsCount').textContent = positionsCount;
+
+            console.log('Results data:', results); // Debug log
+            console.log('Voters data:', voters);   // Debug log
+
+            // Group results by position and find winners
+            const positionsObj = {};
+            results.forEach(result => {
+                if (!positionsObj[result.position]) {
+                    positionsObj[result.position] = [];
+                }
+                positionsObj[result.position].push(result);
+            });
+
+            // Find winners for each position
+            Object.keys(positionsObj).forEach(position => {
+                const positionResults = positionsObj[position];
+                const maxVotes = Math.max(...positionResults.map(r => r.vote_count));
+                positionResults.forEach(result => {
+                    result.is_winner = result.vote_count === maxVotes && maxVotes > 0;
+                });
+            });
+
+            // Display results
+            const container = document.getElementById('resultsList');
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="card-title">No Voting Results Yet</div>
+                        <div class="card-subtitle">
+                            <p>No votes have been cast yet. The results will appear here once students start voting.</p>
+                            <p style="margin-top: 1rem;"><strong>Current Candidates:</strong></p>
+                            <ul style="text-align: left; margin-top: 0.5rem;">
+                                <li>President: Emma Thompson vs James Wilson</li>
+                                <li>Vice President: Sophia Chen vs Daniel Martinez</li>
+                                <li>Secretary: Olivia Davis</li>
+                                <li>Treasurer: William Brown</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = Object.entries(positionsObj).map(([position, positionResults]) => {
+                const totalPositionVotes = positionResults.reduce((sum, r) => sum + r.vote_count, 0);
+                
+                return `
+                    <div class="position-results">
+                        <h3 class="position-title">${position}</h3>
+                        <div style="margin-bottom: 1rem; color: #666;">
+                            <small>Total Votes for this position: ${totalPositionVotes}</small>
+                        </div>
+                        ${positionResults.map(candidate => {
+                            const percentage = totalPositionVotes > 0 
+                                ? ((candidate.vote_count / totalPositionVotes) * 100).toFixed(1)
+                                : 0;
+                            
+                            return `
+                                <div class="candidate-result ${candidate.is_winner ? 'winner' : ''}">
+                                    <div class="candidate-name">
+                                        ${candidate.name}
+                                        ${candidate.grade ? ` (${candidate.grade})` : ''}
+                                        ${candidate.is_winner ? '<span class="winner-badge">WINNER</span>' : ''}
+                                    </div>
+                                    <div class="vote-bar-container">
+                                        <div class="vote-bar" style="width: ${percentage}%"></div>
+                                    </div>
+                                    <div class="vote-count">
+                                        ${candidate.vote_count} votes (${percentage}%)
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Auto-refresh results every 30 seconds
+        function startAutoRefresh() {
+            setInterval(loadResults, 30000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResults();
+            startAutoRefresh();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates - School Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .candidate-profile {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-profile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .candidate-profile:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .candidate-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            border: 4px solid white;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .candidate-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .candidate-position {
+            background: linear-gradient(135deg, var(--accent), #ffed4e);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(255,215,0,0.3);
+        }
+
+        .candidate-details {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .candidate-slogan {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .slogan-text {
+            font-style: italic;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .position-section {
+            margin-bottom: 3rem;
+        }
+
+        .position-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .position-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .position-title {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .position-description {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            color: var(--primary);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="school-logo">CTK</div>
+                <h1>Meet the Candidates</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="candidates.html" class="nav-link active"><i class="fas fa-users"></i> Candidates</a></li>
+                <li><a href="voters.html" class="nav-link"><i class="fas fa-user-friends"></i> Voters</a></li>
+                <li><a href="results.html" class="nav-link"><i class="fas fa-chart-bar"></i> Results</a></li>
+                <li><a href="login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li><a href="admin.html" class="nav-link"><i class="fas fa-shield-alt"></i> Admin</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">2024 Candidates</h1>
+        <p class="page-subtitle">Get to know your fellow students running for leadership positions</p>
+
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterCandidates('all')">
+                <i class="fas fa-layer-group"></i> All Positions
+            </button>
+            <button class="filter-btn" onclick="filterCandidates('President')">
+                <i class="fas fa-user-tie"></i> President
+            </button>
+            <button class="filter-btn" onclick="filterCandidates('Vice President')">
+                <i class="fas fa-user-friends"></i> Vice President
+            </button>
+            <button class="filter-btn" onclick="filterCandidates('Secretary')">
+                <i class="fas fa-clipboard-list"></i> Secretary
+            </button>
+            <button class="filter-btn" onclick="filterCandidates('Treasurer')">
+                <i class="fas fa-calculator"></i> Treasurer
+            </button>
+        </div>
+
+        <!-- Candidates will be loaded here -->
+        <div id="candidatesContainer">
+            <div class="cards-grid">
+                <div class="candidate-profile fade-in-up">
+                    <div class="candidate-photo">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="candidate-name">Loading Candidates...</div>
+                    <div class="candidate-position">Please wait</div>
+                    <div class="candidate-details">
+                        <div class="detail-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Grade: Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-quote-left"></i>
+                            <span>Loading description...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 1rem;">
+                <div class="school-logo">CTK</div>
+                <h2>Christ the King Anglican School</h2>
+            </div>
+            <p>Empowering students through democratic participation</p>
+            
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Portal</a>
+            </div>
+            
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            
+            <p>&copy; 2024 Christ the King Anglican School. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Update API_BASE to your Railway deployment URL
+        const API_BASE = 'https://your-app-name.up.railway.app/api';
+        let allCandidates = [];
+
+        // Load candidates
+        async function loadCandidates() {
+            try {
+                const response = await fetch(`${API_BASE}/candidates`);
+                allCandidates = await response.json();
+                displayCandidates(allCandidates);
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+                document.getElementById('candidatesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h3 style="color: white; margin-bottom: 1rem;">Unable to Load Candidates</h3>
+                        <p style="color: rgba(255,255,255,0.8);">Please check your connection and try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display candidates
+        function displayCandidates(candidates) {
+            const container = document.getElementById('candidatesContainer');
+            
+            if (candidates.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-users-slash"></i>
+                        </div>
+                        <h3 style="color: white; margin-bottom: 1rem;">No Candidates Yet</h3>
+                        <p style="color: rgba(255,255,255,0.8);">Check back later for candidate information.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group candidates by position
+            const positions = {};
+            candidates.forEach(candidate => {
+                if (!positions[candidate.position]) {
+                    positions[candidate.position] = [];
+                }
+                positions[candidate.position].push(candidate);
+            });
+
+            let html = '';
+            
+            Object.entries(positions).forEach(([position, positionCandidates]) => {
+                const positionIcons = {
+                    'President': 'user-tie',
+                    'Vice President': 'user-friends',
+                    'Secretary': 'clipboard-list',
+                    'Treasurer': 'calculator'
+                };
+
+                html += `
+                    <div class="position-section" data-position="${position}">
+                        <div class="position-header">
+                            <div class="position-icon">
+                                <i class="fas fa-${positionIcons[position] || 'user'}"></i>
+                            </div>
+                            <h2 class="position-title">${position}</h2>
+                            <p class="position-description">
+                                ${getPositionDescription(position)}
+                            </p>
+                        </div>
+                        <div class="cards-grid">
+                            ${positionCandidates.map((candidate, index) => `
+                                <div class="candidate-profile fade-in-up" style="animation-delay: ${index * 0.1}s">
+                                    <div class="candidate-photo" style="background: linear-gradient(135deg, ${getColorByPosition(position)});">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </div>
+                                    <div class="candidate-name">${candidate.name}</div>
+                                    <div class="candidate-position">${candidate.position}</div>
+                                    <div class="candidate-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <span>Grade: ${candidate.grade}</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-quote-left"></i>
+                                            <span>${candidate.description || 'Committed to student success and school improvement'}</span>
+                                        </div>
+                                    </div>
+                                    ${candidate.campaign_slogan ? `
+                                        <div class="candidate-slogan">
+                                            <p class="slogan-text">"${candidate.campaign_slogan}"</p>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Filter candidates by position
+        function filterCandidates(position) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            if (position === 'all') {
+                displayCandidates(allCandidates);
+                return;
+            }
+
+            const filteredCandidates = allCandidates.filter(candidate => 
+                candidate.position === position
+            );
+            displayCandidates(filteredCandidates);
+        }
+
+        // Helper function to get position descriptions
+        function getPositionDescription(position) {
+            const descriptions = {
+                'President': 'The School President represents all students and leads the student council in making important decisions.',
+                'Vice President': 'The Vice President supports the President and helps coordinate student activities and events.',
+                'Secretary': 'The Secretary maintains records, communicates updates, and ensures smooth council operations.',
+                'Treasurer': 'The Treasurer manages student funds and budgets for school activities and events.'
+            };
+            return descriptions[position] || 'An important leadership position representing student interests.';
+        }
+
+        // Helper function to get colors by position
+        function getColorByPosition(position) {
+            const colors = {
+                'President': '#004080, #1a6fc4',
+                'Vice President': '#28a745, #20c997',
+                'Secretary': '#dc3545, #e83e8c',
+                'Treasurer': '#ffc107, #fd7e14'
+            };
+            return colors[position] || '#6c757d, #868e96';
+        }
+
+        // Add fade-in animation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCandidates();
+            
+            const elements = document.querySelectorAll('.fade-in-up');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

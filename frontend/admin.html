@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - School Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn-admin {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 5rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-only {
+            display: none;
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <i class="fas fa-shield-alt logo"></i>
+                <h1>Admin Panel</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="admin.html" class="nav-link"><i class="fas fa-shield-alt"></i> Admin</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Login Form -->
+        <div id="loginSection">
+            <div class="login-form">
+                <h2 style="text-align: center; color: var(--primary); margin-bottom: 2rem;">Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="username"><i class="fas fa-user"></i> Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i> Admin Login
+                    </button>
+                </form>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <p>Username: admin | Password: admin123</p>
+                    <p>Username: teacher | Password: teacher123</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard (shown after login) -->
+        <div id="adminDashboard" class="admin-only">
+            <h1 class="page-title">Admin Dashboard</h1>
+            
+            <!-- Statistics -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="statVoters">0</div>
+                    <div class="stat-label">Total Voters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statCandidates">0</div>
+                    <div class="stat-label">Candidates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statVotes">0</div>
+                    <div class="stat-label">Votes Cast</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="statParticipation">0%</div>
+                    <div class="stat-label">Participation</div>
+                </div>
+            </div>
+
+            <!-- Management Sections -->
+            <div class="admin-sections">
+                <!-- Candidates Management -->
+                <div class="admin-section">
+                    <h3 class="section-title">Manage Candidates</h3>
+                    
+                    <!-- Add Candidate Form -->
+                    <form id="addCandidateForm">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Position:</label>
+                            <select name="position" required>
+                                <option value="President">President</option>
+                                <option value="Vice President">Vice President</option>
+                                <option value="Secretary">Secretary</option>
+                                <option value="Treasurer">Treasurer</option>
+                                <option value="Class Representative">Class Representative</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Grade:</label>
+                            <input type="text" name="grade" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea name="description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Campaign Slogan:</label>
+                            <input type="text" name="campaign_slogan">
+                        </div>
+                        <button type="submit" class="btn-admin">
+                            <i class="fas fa-plus"></i> Add Candidate
+                        </button>
+                    </form>
+
+                    <!-- Candidates List -->
+                    <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Current Candidates</h4>
+                    <div id="candidatesList">
+                        <p>Loading candidates...</p>
+                    </div>
+                </div>
+
+                <!-- Voters Management -->
+                <div class="admin-section">
+                    <h3 class="section-title">Manage Voters</h3>
+                    
+                    <!-- Add Voter Form -->
+                    <form id="addVoterForm">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Student ID:</label>
+                            <input type="text" name="student_id" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Grade Level:</label>
+                            <select name="grade_level" required>
+                                <option value="9th Grade">9th Grade</option>
+                                <option value="10th Grade">10th Grade</option>
+                                <option value="11th Grade">11th Grade</option>
+                                <option value="12th Grade">12th Grade</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-admin">
+                            <i class="fas fa-plus"></i> Add Voter
+                        </button>
+                    </form>
+
+                    <!-- Voters List -->
+                    <h4 style="margin-top: 2rem; margin-bottom: 1rem;">Registered Voters</h4>
+                    <div id="votersList">
+                        <p>Loading voters...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Actions -->
+            <div class="admin-section">
+                <h3 class="section-title">System Actions</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn-admin btn-warning" onclick="resetVoting()">
+                        <i class="fas fa-undo"></i> Reset All Voting
+                    </button>
+                    <button class="btn-admin btn-danger" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Reset Voting will clear all votes and allow everyone to vote again.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Replace the API_BASE with your Railway deployment URL
+        const API_BASE = 'https://your-app-name.up.railway.app/api';
+        let adminToken = null;
+
+        // Admin Login
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    adminToken = result.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    showAdminDashboard();
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Login failed: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed: ' + error.message);
+            }
+        });
+
+        // Show/Hide Admin Sections
+        function showAdminDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            
+            // Update navigation
+            document.getElementById('adminNavItem').innerHTML = `
+                <a href="#" class="nav-link" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            `;
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('adminNavItem').innerHTML = '';
+        }
+
+        // Load Admin Data
+        async function loadAdminData() {
+            if (!adminToken) return;
+
+            try {
+                const [dashboardRes, candidatesRes, votersRes] = await Promise.all([
+                    fetch(`${API_BASE}/admin/dashboard`, {
+                        headers: { 'Authorization': adminToken }
+                    }),
+                    fetch(`${API_BASE}/candidates`),
+                    fetch(`${API_BASE}/voters`)
+                ]);
+
+                if (dashboardRes.ok) {
+                    const dashboard = await dashboardRes.json();
+                    document.getElementById('statVoters').textContent = dashboard.total_voters;
+                    document.getElementById('statCandidates').textContent = dashboard.total_candidates;
+                    document.getElementById('statVotes').textContent = dashboard.votes_cast;
+                    document.getElementById('statParticipation').textContent = dashboard.participation_rate + '%';
+                }
+
+                if (candidatesRes.ok) {
+                    const candidates = await candidatesRes.json();
+                    displayCandidatesList(candidates);
+                }
+
+                if (votersRes.ok) {
+                    const voters = await votersRes.json();
+                    displayVotersList(voters);
+                }
+
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+            }
+        }
+
+        // Display Candidates List
+        function displayCandidatesList(candidates) {
+            const container = document.getElementById('candidatesList');
+            
+            if (candidates.length === 0) {
+                container.innerHTML = '<p>No candidates found.</p>';
+                return;
+            }
+
+            container.innerHTML = candidates.map(candidate => `
+                <div class="list-item">
+                    <div>
+                        <strong>${candidate.name}</strong><br>
+                        <small>${candidate.position} • ${candidate.grade}</small>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-admin btn-danger" onclick="deleteCandidate(${candidate.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display Voters List
+        function displayVotersList(voters) {
+            const container = document.getElementById('votersList');
+            
+            if (voters.length === 0) {
+                container.innerHTML = '<p>No voters found.</p>';
+                return;
+            }
+
+            container.innerHTML = voters.map(voter => `
+                <div class="list-item">
+                    <div>
+                        <strong>${voter.name}</strong><br>
+                        <small>${voter.student_id} • ${voter.grade_level}</small><br>
+                        <small style="color: ${voter.has_voted ? 'var(--success)' : 'var(--danger)'};">
+                            ${voter.has_voted ? '✓ Voted' : '✗ Not Voted'}
+                        </small>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-admin btn-danger" onclick="deleteVoter(${voter.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add Candidate
+        document.getElementById('addCandidateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const candidateData = {
+                name: formData.get('name'),
+                position: formData.get('position'),
+                grade: formData.get('grade'),
+                description: formData.get('description'),
+                campaign_slogan: formData.get('campaign_slogan')
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': adminToken
+                    },
+                    body: JSON.stringify(candidateData)
+                });
+
+                if (response.ok) {
+                    alert('Candidate added successfully!');
+                    this.reset();
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error adding candidate:', error);
+                alert('Error adding candidate: ' + error.message);
+            }
+        });
+
+        // Add Voter
+        document.getElementById('addVoterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const voterData = {
+                name: formData.get('name'),
+                student_id: formData.get('student_id'),
+                grade_level: formData.get('grade_level')
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/voters`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': adminToken
+                    },
+                    body: JSON.stringify(voterData)
+                });
+
+                if (response.ok) {
+                    alert('Voter added successfully! Default password: password123');
+                    this.reset();
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error adding voter:', error);
+                alert('Error adding voter: ' + error.message);
+            }
+        });
+
+        // Delete Candidate
+        async function deleteCandidate(id) {
+            if (!confirm('Are you sure you want to delete this candidate?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': adminToken }
+                });
+
+                if (response.ok) {
+                    alert('Candidate deleted successfully!');
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error deleting candidate:', error);
+                alert('Error deleting candidate: ' + error.message);
+            }
+        }
+
+        // Delete Voter
+        async function deleteVoter(id) {
+            if (!confirm('Are you sure you want to delete this voter?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/voters/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': adminToken }
+                });
+
+                if (response.ok) {
+                    alert('Voter deleted successfully!');
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error deleting voter:', error);
+                alert('Error deleting voter: ' + error.message);
+            }
+        }
+
+        // Reset Voting
+        async function resetVoting() {
+            if (!confirm('WARNING: This will clear ALL votes and allow everyone to vote again. Continue?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/reset-voting`, {
+                    method: 'POST',
+                    headers: { 'Authorization': adminToken }
+                });
+
+                if (response.ok) {
+                    alert('Voting reset successfully! All votes have been cleared.');
+                    loadAdminData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Error resetting voting:', error);
+                alert('Error resetting voting: ' + error.message);
+            }
+        }
+
+        // Export Data
+        function exportData() {
+            alert('Export feature coming soon!');
+            // This would generate CSV/Excel files of voting data
+        }
+
+        // Logout
+        function logoutAdmin() {
+            adminToken = null;
+            localStorage.removeItem('adminToken');
+            showLoginForm();
+        }
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedToken = localStorage.getItem('adminToken');
+            if (savedToken) {
+                adminToken = savedToken;
+                showAdminDashboard();
+                loadAdminData();
+            }
+        });
+    </script>
+</body>
+</html>

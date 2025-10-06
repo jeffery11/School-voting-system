@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "start": "node server-simple.js",
+    "dev": "node server.js"
+  }
+}

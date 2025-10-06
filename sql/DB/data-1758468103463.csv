@@ -1,0 +1,7 @@
+"column_name","data_type","is_nullable"
+"id","integer","NO"
+"name","character varying","NO"
+"position_id","integer","YES"
+"student_id","character varying","YES"
+"statement","text","YES"
+"created_at","timestamp without time zone","YES"

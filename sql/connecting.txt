@@ -1,0 +1,4 @@
+postgres
+Senanu
+5432
+6432

@@ -1,0 +1,8 @@
+"table_name","table_type","total_tables"
+"candidates","BASE TABLE","7"
+"election_settings","BASE TABLE","7"
+"items","BASE TABLE","7"
+"positions","BASE TABLE","7"
+"students","BASE TABLE","7"
+"voters","BASE TABLE","7"
+"votes","BASE TABLE","7"

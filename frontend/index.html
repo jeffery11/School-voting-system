@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Christ the King Anglican School</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="school-logo">CTK</div>
+        <h1>Christ the King Anglican School</h1>
+      </div>
+      <nav>
+        <button class="menu-toggle" id="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="candidates.html"><i class="fas fa-users"></i> Candidates</a></li>
+          <li><a href="voters.html"><i class="fas fa-user-friends"></i> Voters</a></li>
+          <li><a href="results.html"><i class="fas fa-chart-bar"></i> Results</a></li>
+          <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+          <li><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero fade-in-up">
+    <div class="hero-image">
+      <i class="fas fa-crown"></i>
+    </div>
+    <h1 class="hero-title">School Election 2024</h1>
+    <p class="hero-subtitle">Empowering Student Voices Through Democratic Participation</p>
+    <div class="hero-buttons">
+      <a href="login.html" class="btn"><i class="fas fa-vote-yea"></i> Vote Now</a>
+      <a href="candidates.html" class="btn btn-secondary"><i class="fas fa-users"></i> Meet Candidates</a>
+    </div>
+  </section>
+
+  <!-- Quick Stats -->
+  <section class="cards-grid">
+    <div class="card fade-in-up">
+      <i class="fas fa-user-graduate card-icon"></i>
+      <h3>Student Leadership</h3>
+      <p>Empowering students to take leadership roles and make meaningful contributions.</p>
+    </div>
+
+    <div class="card fade-in-up">
+      <i class="fas fa-democrat card-icon"></i>
+      <h3>Democratic Process</h3>
+      <p>Experience the democratic process through fair and transparent elections.</p>
+    </div>
+
+    <div class="card fade-in-up">
+      <i class="fas fa-handshake card-icon"></i>
+      <h3>Community Building</h3>
+      <p>Building a stronger school community through participation and decision-making.</p>
+    </div>
+  </section>
+
+  <!-- Election Info -->
+  <section class="card election-info">
+    <h2>About the Election</h2>
+    <div class="info-grid">
+      <div>
+        <h3><i class="fas fa-calendar-alt"></i> Election Timeline</h3>
+        <ul>
+          <li><strong>Campaign:</strong> March 1-15</li>
+          <li><strong>Voting Day:</strong> March 16, 2024</li>
+          <li><strong>Results:</strong> March 17, 2024</li>
+        </ul>
+      </div>
+      <div>
+        <h3><i class="fas fa-bullhorn"></i> Available Positions</h3>
+        <ul>
+          <li><i class="fas fa-user-tie"></i> School President</li>
+          <li><i class="fas fa-user-friends"></i> Vice President</li>
+          <li><i class="fas fa-clipboard-list"></i> Secretary</li>
+          <li><i class="fas fa-calculator"></i> Treasurer</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta">
+    <h2>Ready to Make Your Voice Heard?</h2>
+    <p>Participate in our school's democratic process and shape our community’s future.</p>
+    <a href="login.html" class="btn large"><i class="fas fa-vote-yea"></i> Cast Your Vote Now</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="logo-container">
+        <div class="school-logo">CTK</div>
+        <h2>Christ the King Anglican School</h2>
+      </div>
+      <p>Empowering students to excel in learning, leadership, and life</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Portal</a>
+      </div>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p>&copy; 2024 Christ the King Anglican School. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Update API_BASE to your Railway deployment URL
+    const API_BASE = 'https://your-app-name.up.railway.app/api';
+
+    // Responsive Menu Toggle
+    document.getElementById("menu-toggle").addEventListener("click", function() {
+      document.getElementById("nav-links").classList.toggle("show");
+    });
+
+    // Fade-in animations
+    document.addEventListener("DOMContentLoaded", function() {
+      const elements = document.querySelectorAll('.fade-in-up');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  </script>
+</body>
+</html>
