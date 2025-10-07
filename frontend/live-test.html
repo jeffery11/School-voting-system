@@ -1,0 +1,162 @@
+﻿<!-- Update live-test.html in frontend folder -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Voting - Real Database</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .status { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .candidate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0; }
+        .candidate-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        .vote-btn { background: #28a745; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+        .results { margin-top: 30px; }
+        .vote-log { background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; }
+        .position-header { background: #007bff; color: white; padding: 10px; margin: 20px 0 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Live Voting System - REAL DATABASE</h1>
+    
+    <div class="status">
+        <div><strong>Status:</strong> <span id="status">Connecting...</span></div>
+        <div><strong>Connected Clients:</strong> <span id="clients">0</span></div>
+        <div><strong>Total Votes:</strong> <span id="totalVotes">0</span></div>
+        <div><strong>Real Students in Database:</strong> STU001, STU002, STU003</div>
+    </div>
+
+    <div class="voting-section">
+        <h2>🗳️ Cast Your Vote (Use Real Student IDs)</h2>
+        <div>
+            <label>Student ID: </label>
+            <select id="studentSelect">
+                <option value="STU001">STU001 - John Doe</option>
+                <option value="STU002">STU002 - Jane Smith</option>
+                <option value="STU003">STU003 - (Available)</option>
+            </select>
+        </div>
+        
+        <div id="candidatesContainer">
+            <!-- Candidates loaded by position -->
+        </div>
+    </div>
+
+    <div class="results">
+        <h2>📊 Live Results</h2>
+        <div id="resultsContainer">
+            <!-- Results will be updated in real-time -->
+        </div>
+    </div>
+
+    <div class="activity">
+        <h3>📝 Live Voting Activity</h3>
+        <div id="voteLog" class="vote-log">
+            No votes yet...
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let voteLog = [];
+
+        socket.on('connect', () => {
+            document.getElementById('status').innerHTML = '<span style="color: green;">🟢 Connected to Real Database</span>';
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('status').innerHTML = '<span style="color: red;">🔴 Disconnected</span>';
+        });
+
+        socket.on('welcome', (data) => {
+            document.getElementById('clients').textContent = data.connectedClients;
+            document.getElementById('totalVotes').textContent = data.totalVotes;
+            loadCandidatesByPosition(data.candidates);
+            updateResults(data.results, data.totalVotes);
+        });
+
+        socket.on('new-vote', (data) => {
+            document.getElementById('totalVotes').textContent = data.totalVotes;
+            updateResults(data.results, data.totalVotes);
+            addToVoteLog(data);
+        });
+
+        socket.on('vote-confirmed', (data) => {
+            alert('✅ ' + data.message);
+        });
+
+        socket.on('vote-error', (data) => {
+            alert('❌ ' + data.message);
+        });
+
+        function loadCandidatesByPosition(candidates) {
+            const container = document.getElementById('candidatesContainer');
+            const positions = [...new Set(candidates.map(c => c.position))];
+            
+            let html = '';
+            positions.forEach(position => {
+                html += `<div class="position-header">${position}</div>`;
+                html += '<div class="candidate-grid">';
+                
+                const positionCandidates = candidates.filter(c => c.position === position);
+                positionCandidates.forEach(candidate => {
+                    html += `
+                        <div class="candidate-card">
+                            <h3>${candidate.name}</h3>
+                            <p>${candidate.position}</p>
+                            <button class="vote-btn" onclick="castVote(${candidate.id}, '${candidate.name}')">
+                                Vote for ${candidate.name}
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updateResults(results, totalVotes) {
+            const container = document.getElementById('resultsContainer');
+            let html = '<div class="candidate-grid">';
+            
+            results.forEach(candidate => {
+                const percentage = totalVotes > 0 ? ((candidate.votes / totalVotes) * 100).toFixed(1) : 0;
+                html += `
+                    <div class="candidate-card">
+                        <h3>${candidate.name}</h3>
+                        <p>${candidate.position}</p>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #28a745;">
+                            ${candidate.votes} votes
+                        </div>
+                        <div>${percentage}% of total</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function castVote(candidateId, candidateName) {
+            const studentId = document.getElementById('studentSelect').value;
+            
+            socket.emit('submit-vote', {
+                studentId: studentId,
+                candidateId: candidateId
+            });
+        }
+
+        function addToVoteLog(data) {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = `[${time}] ${data.student.name} voted for ${data.candidate.name} (${data.candidate.position})`;
+            
+            voteLog.unshift(logEntry);
+            if (voteLog.length > 10) voteLog = voteLog.slice(0, 10);
+            
+            const logContainer = document.getElementById('voteLog');
+            logContainer.innerHTML = voteLog.map(entry => `<div>${entry}</div>`).join('') || 'No votes yet...';
+        }
+    </script>
+</body>
+</html>
