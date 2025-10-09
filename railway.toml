@@ -1,0 +1,5 @@
+﻿[build]
+builder = \"nixpacks\"
+
+[deploy]
+startCommand = \"cd api && node enhanced-live-server.js\"
