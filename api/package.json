@@ -1,9 +1,15 @@
 {
+  "name": "school-voting-api",
+  "version": "1.0.0",
+  "main": "enhanced-live-server.js",
   "scripts": {
-    "start": "node server-simple.js",
-    "dev": "node server.js"
+    "start": "node enhanced-live-server.js",
+    "dev": "nodemon enhanced-live-server.js"
   },
   "dependencies": {
-    "socket.io": "^4.8.1"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7"
   }
 }
